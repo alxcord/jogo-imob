@@ -1,0 +1,3 @@
+import core
+
+print ("Teste")
