@@ -50,46 +50,19 @@ class ChanceAndCommunityDeck:
       return self.cards.pop(0)
   
 
-class PlayerInterface:
-    def message(self, player_name: str, m: str):
-        pass
-    
-    def get_player(player_color: Color, 
-                   name: str, 
-                   cash: int = INTIAL_CASH_VALUE):
-        pass
-    
-class PlayerInterfaceTerminal():
-    
-    def __init__(self):
-        pass
-    
-    def message(self, player_name: str, m: str):
-        print(f"{player_name}: {m}")
-    
-    
-        
-    
-
 class Player:
     
     def __init__(self, 
+                 player_name: str, 
                  player_color: Color, 
-                 name: str, 
-                 interface: PlayerInterface, 
                  cash: int = INTIAL_CASH_VALUE):
         self.color = player_color
-        self.name = name
+        self.name = player_name
         self.cash = cash
         self.assets = []
         self.position = 0
-        self.name = name
-        self.interface = interface
         
 
-    def set_player_interface(self, pi: PlayerInterface):
-        self.interface = pi
-        
     def pay(self, value: int) -> int:
         self.cash = self.cash - value
         
@@ -102,7 +75,7 @@ class Player:
     def get_position(self) -> int:
         return self.position 
     
-    def set_position(self, p: int)
+    def set_position(self, p: int):
         self.position = p
     
     def get_salary(self):
@@ -156,7 +129,7 @@ class Asset():
     
 
 class Property(Asset):
-    ret_value: int
+    rent_value: int
     house_rent_value: int
     hotel_ret_value: int
     shopping_rent_value: int
@@ -229,21 +202,84 @@ class StepCollection:
         p.set_position(position)
         
         
+
+# Interface - implementação rudimentar
+
+
+class PlayerInterface:
+    def message(self, player_name: str, m: str):
+        pass
+    
+    def create_player() ->Player:
+        pass
+    
+class PlayerInterfaceTerminal(PlayerInterface):
+    
+    def __init__(self):
+        pass
+    
+    def message(self, m: str):
+        print(m)
         
+    
+    def create_player(self) ->Player:
+        confirm = False
+        while (not confirm):
+            player_color = None
+            player_name = ""
+            while(not player_name):
+                player_name = input("Nome do jogador: ")
+            cores = {'1': ['Vermelho', Color.RED], 
+                    '2': ['Azul', Color.BLUE],
+                    '3': ['Preto', Color.BLACK],
+                    '4': ['Amarelo', Color.YELLOW],
+                    '5': ['Branco', Color.WHITE],
+                    }
+            for k,v in cores.items():
+                print (f'{k} - {v[0]}')
+            
+            while(not player_color):
+                choice = input("Escolha a cor: ")
+                if choice in cores:
+                    player_color = cores[choice][1]
+                else:
+                    print("Digite apenas o numero")
+            conf = input ("Confirma?").upper()
+            if conf[0] in ('S', 'Y'):
+                confirm = True
+        return Player(player_name, player_color)
+    
+class PlayerSession:    
+    def __init__(self, pcol: PlayerCollection, i: PlayerInterface, player: Player = None):
+        current_player = player
+        while(True):
+            try:
+                if (current_player == None):
+                    self.player = i.create_player()
+                else:
+                    self.player = p
+                self.interface = i
+                pcol.append(self.player)
+                break
+            except ValueError:
+                current_player = None
+                i.message("Jogador inválido, favor entrar novamente")
+            
+            
+    def get_player(self)->Player:
+        return self.player
+    
+    
+
+   
             
             
 if __name__ == "__main__":
     
     interface = PlayerInterfaceTerminal()
-    
     p_col = PlayerCollection()
-    p1 = Player(Color.BLACK, "Alex", interface)
-    p1.set_player_interface(PlayerInterfaceTerminal)
     
-    p2 = Player(Color.BLUE, "Leo", interface)
-    p2.set_player_interface(PlayerInterfaceTerminal)
-
-    p_col.append(p1)
-    p_col.append(p2)
+    s1 = PlayerSession(p_col, interface)
+    s2 = PlayerSession(p_col, interface)
     
         
